@@ -1,5 +1,67 @@
 import ast
 
+# todo extra filter op vennootschapstype (bepaalde items worden geblacklist)
+# those are in the enterprise.csv 
+# omschrijving van de codes in code.csv
+
+
+def filter_juridicalForm_and_juridicalSituation(file, ondernemingsset):
+    with open(ondernemingsset) as o:
+        ondernemingen = ast.literal_eval(o.read())
+    
+    #geen stopzetting of faillisement of dergelijke
+    juridicalsituation_whitelist = {"000", "001", "002", "020", "090", "100"}
+    # geen NV, ziekenfonds, overheid, ...
+    juridicalForm_blacklist = {"014", "019", "017", "018", "020", "021", "025", "029", "040", "070", "117", "121", "123", 
+                               "124", "125", "126", "127", "128", "129", "155", "160", "217", "218", "722", "723", "724"}
+    juridicalForm_blacklist_ranges = [(301, 392), (400, 422)]
+
+    for interval in juridicalForm_blacklist_ranges:
+        juridicalForm_blacklist.update(map(str,range(interval[0], interval[1]+1)))
+
+    onderneming_nummers = set()
+
+    with open(file, encoding="utf8") as f:
+        line = f.readline()
+        while True:
+            line = f.readline()
+            if not line:
+                print('eof')
+                break
+            values = line.strip().replace('"', '').split(',')
+            
+            if (values[2] in juridicalsituation_whitelist 
+                and values[4] not in juridicalForm_blacklist 
+                and values[0] in ondernemingen):
+                onderneming_nummers.add(values[0])
+            
+    ond = open("ondernemingen.txt", 'w')
+    ond.write(str(onderneming_nummers))
+    ond.close()
+
+    # if you want to do something later with this info save as separate file
+    # with open(file, encoding="utf8") as f, open("filter_juridical.csv", "w") as csv_file:
+    #     line = f.readline()
+    #     csv_file.write(line)
+    #     while True:
+    #         line = f.readline()
+    #         if not line:
+    #             print('eof')
+    #             break
+    #         values = line.strip().replace('"', '').split(',')
+            
+    #         if values[2] in juridicalsituation_whitelist and values[4] not in juridicalForm_blacklist:
+    #             csv_file.write(line)
+            
+
+
+
+
+
+
+    
+
+
 
 def filter_activities(file):
     schilders = {"43341", "43342", "4334", "4334101", "4334201", "3109111", "31099", "31092"}
@@ -13,7 +75,7 @@ def filter_activities(file):
                    "27402", "25930", "2651", "27900", "26510"}
     zonnepanelen = {"47540"} #, "35110"}
     vloerverwarming = {"4322", "4322202", "43222", "27520", "33110"}
-    airco = {"28250", "2825003", "4322201", "4329","432"}
+    airco = {"28250", "2825003", "4322201", "4329", "432"}
     dakwerken = {"43910", "43999", "4391001", "4399101", "43991", "43291"}
     carrossier = {"52290"}
     auto_onderhoud = {"45203", "45201", "7120907", "451", "4730002", "4778802", "4511", "4520301", "4520101", "4532001",
@@ -64,7 +126,12 @@ def filter_activities(file):
 
 
 def filter_zipcodes(file):
-    postcodes = ["3980", "3580", "3945", "2430", "2431", "3290", "3293", "3294", "3560", "2440", "3970", "2450"]
+    postcodes_first_mailing = ["3980", "3580", "3945", "2430", "2431", "3290", "3293", "3294", "3560", "2440", "3970", "2450"]
+    postcodes = ["3581", "3582", "3971",
+                 "2200", "2250", "2400", "2490", "2260", "3545", "3550", "3500", "3501", "3510", "3511", "3512", 
+                 "2280", "2288", "2560", "2270", "2240", "2242", "2243", "3540", "3390", "3391", "3270", "3271", 
+                 "3272", "3460", "3461", "3200", "3201", "3202", "2230", "3520", "3530",
+                 "3600", "3210", "3110", "3111", "3118", "3220", "3221", "3000", "3001", "3010", "3012", "3018"]
 
     with open(file, encoding="utf8") as f, open("filter_address.csv", "w") as csv_file:
         line = f.readline()
@@ -84,10 +151,10 @@ def combine_zip_activity_filter(adresfile, ondernemingsset):
     with open(ondernemingsset) as o:
         ondernemingen = ast.literal_eval(o.read())
 
-    denomdict = get_denomination_dictionary("kbo data 10 2023/denomination.csv")
+    denomdict = get_denomination_dictionary("kbo data 06 2024/denomination.csv")
 
-    with open(adresfile, encoding="latin-1") as a, \
-            open("doublefilter_address.csv", "w", encoding="latin-1") as output:
+    with open(adresfile, encoding="ISO-8859-1") as a, \
+            open("doublefilter_address.csv", "w", encoding="utf8") as output:
 
         line = a.readline()
         output.write('"Naam", ')
@@ -109,27 +176,33 @@ def get_denomination_dictionary(denominationfile):
     # todo: aanpassen zodat NL prio heeft, dan indeterminate, en dan FR
 
     denomdict = {}
-    with open(denominationfile, encoding="latin-1") as d:
+    with open(denominationfile, encoding="utf8") as d:
         while True:
             line = d.readline()
             if not line:
                 print('eof')
                 break
             values = line.strip().replace('"', '').split(',')
-            # if values[1] in ["0","2"]:
+            # if values[1] in ["0", "2"]:
             denomdict[values[0]] = values[3]
     return denomdict
 
 
 def main():
+    # not needed again unless the activities change
+
     print("filter in the list of activities")
-    filter_activities("kbo data 10 2023/activity.csv")
+    filter_activities("kbo data 06 2024/activity.csv")
 
     print("filter adressen")
-    filter_zipcodes("kbo data 10 2023/address.csv")
+    filter_zipcodes("kbo data 06 2024/address.csv")
 
-    print("combineer filters en voeg naam toe")
+    print("filter ondernemingenlijst op vennootschapsvorm en juridische situatie")
+    filter_juridicalForm_and_juridicalSituation("kbo data 06 2024/enterprise.csv", "ondernemingen.txt")
+
+    print("combineer adresfilter met ondernemingelijst en voeg naam toe")
     combine_zip_activity_filter("filter_address.csv", "ondernemingen.txt")
+
 
 
 if __name__ == "__main__":

@@ -1,0 +1,45 @@
+3980: Tessenderlo  
+3580: Beringen
+3945: Ham & Oostham
+2430: Laakdal, Vorst, Eindhout
+2431: Veerle, Varendonk
+3290: Diest, Schaffen, Deurne, Webbekom
+3293: Kaggevinne
+3294: Molenstede
+3560: Lummen, Linkhout, Meldert
+2440: Geel
+3970: Leopoldsburg
+2450: Meerhout
+
+
+Toe te voegen
+3581 3582 Beringen (Beverlo, Stal)
+3971 Heppen (Leopoldsburg)
+
+
+2200: Herentals
+2250: Olen
+2400 Mol?
+2490 Balen?
+2260: westerlo
+3545 halen
+3550 heusden-zolder
+3500, 3501, 3510, 3511, 3512 hasselt
+2280, 2288 grobbendonk
+2560 nijlen
+2270 herenthout
+2240, 2242, 2243 zandhoven
+3540 herk-de-stad
+3390 3391 tielt-winge
+3270 3271 3272 scherpenheuvel-zichem
+3460 3461 bekkevoort
+3200 3201 3202 aarschot?
+2230 herselt?
+3520 zonhoven
+3530 houthalen-helchteren
+
+3600 Genk
+3210 Lubbeek
+3110 3111 3118 Rotselaar
+3220 3221 Holsbeek
+3000 3001 3010 3012 3018 Leuven
