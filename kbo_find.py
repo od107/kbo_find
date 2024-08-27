@@ -75,7 +75,7 @@ def filter_activities(file):
     stukadoor = {"43310"}
 
     onderneming_nummers = set()
-    vestiging_nummers = set()
+    # vestiging_nummers = set()
     query = schilders.union(schrijnwerker).union(sanitair).union(elektricien).union(zonnepanelen).union(
         vloerverwarming).union(airco).union(dakwerken).union(stukadoor)
     with open(file) as f:
@@ -89,22 +89,22 @@ def filter_activities(file):
             if values[3] in query:  # and values[0][1:2] == '0':
                 if values[0][0:1] == '0':
                     onderneming_nummers.add(values[0])
-                else:
-                    vestiging_nummers.add(values[0])
+                # else:
+                #     vestiging_nummers.add(values[0])
 
     ond = open("ondernemingen.txt", 'w')
     ond.write(str(onderneming_nummers))
     ond.close()
 
-    vest = open("vestigingen.txt", "w")
-    vest.write(str(vestiging_nummers))
-    vest.close()
+    # vest = open("vestigingen.txt", "w")
+    # vest.write(str(vestiging_nummers))
+    # vest.close()
 
-    # with open('filter_ondernemingen.csv', mode='w') as csv_file:
-    #     line = '"ondernemingsnummer"\n'
-    #     csv_file.write(line)
-    #     for item in onderneming_nummers:
-    #         csv_file.writelines('"' + item + '"\n')
+    with open('filter_ondernemingen.csv', mode='w') as csv_file:
+        line = '"ondernemingsnummer"\n'
+        csv_file.write(line)
+        for item in onderneming_nummers:
+            csv_file.writelines('"' + item + '"\n')
     #
     # with open('filter_vestigingen.csv', mode='w') as csv_file:
     #     line = '"vestigingsnummer"\n'
@@ -113,6 +113,7 @@ def filter_activities(file):
     #         csv_file.writelines('"' + item + '"\n')
 
     print("activity filtering done")
+    print(f'Number of records: {len(onderneming_nummers)}')
 
     return
 
@@ -124,6 +125,8 @@ def filter_zipcodes(file):
                  "2280", "2288", "2560", "2270", "2240", "2242", "2243", "3540", "3390", "3391", "3270", "3271", 
                  "3272", "3460", "3461", "3200", "3201", "3202", "2230", "3520", "3530",
                  "3600", "3210", "3110", "3111", "3118", "3220", "3221", "3000", "3001", "3010", "3012", "3018"]
+
+    count = 0
 
     with open(file, encoding="utf8") as f, open("filter_address.csv", "w") as csv_file:
         line = f.readline()
@@ -137,6 +140,10 @@ def filter_zipcodes(file):
             # postcode in de lijst, niet in het buitenland en adres niet geschrapt en straat ingevuld
             if values[4] in postcodes and values[2] == '' and values[12] == '' and values[7] != '':
                 csv_file.write(line)
+                count += 1
+    
+    print("zip filtering done")
+    print(f'Number of records: {count}')
 
 
 def combine_zip_activity_filter(adresfile, ondernemingsset):

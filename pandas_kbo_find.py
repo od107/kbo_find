@@ -43,6 +43,8 @@ def filter_activities(file):
     ondernemingen.to_csv('ondernemingen.csv', index=False)
 
     print("activity filtering done")
+    print(f'Number of records: {len(ondernemingen)}')
+    # 163153 vs 154074 originally
 
     return
 
@@ -64,6 +66,10 @@ def filter_zipcodes(file):
     df = df[df['CountryNL'].isnull()]
     df = df[df['DateStrikingOff'].isnull() & df['StreetNL'].notnull()]
     df.to_csv('filter_address.csv', index=False)
+
+    print("zipcodes filtered")
+    print(f'Number of records: {len(df.index)}')
+    # 161541 vs 161499 originally
 
 def filter_juridicalForm_and_juridicalSituation(file, ondernemingsset):
     
@@ -123,6 +129,8 @@ def filter_juridicalForm_and_juridicalSituation(file, ondernemingsset):
 
     denom = pd.read_csv('data/denomination.csv', index_col=0)
     denom = denom[denom['Language'].isin([0, 2]) & denom['TypeOfDenomination'] == 1]
+    #todo For some reason some TypeOfDenomination = 3 are still included
+    
     #denom.set_index('EntityNumber')
     # print("denom")
     # print(denom.head())
@@ -157,7 +165,7 @@ def filter_juridicalForm_and_juridicalSituation(file, ondernemingsset):
     #         if values[0] in ondernemingen:
     #             output.write('"' + denomdict[values[0]] + '", ')
     #             output.write(line)
-s
+
 
 
 def main():
