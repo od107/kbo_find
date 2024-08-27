@@ -1,4 +1,5 @@
 import ast
+import time
 
 # todo extra filter op vennootschapstype (bepaalde items worden geblacklist)
 # those are in the enterprise.csv 
@@ -53,15 +54,6 @@ def filter_juridicalForm_and_juridicalSituation(file, ondernemingsset):
     #         if values[2] in juridicalsituation_whitelist and values[4] not in juridicalForm_blacklist:
     #             csv_file.write(line)
             
-
-
-
-
-
-
-    
-
-
 
 def filter_activities(file):
     schilders = {"43341", "43342", "4334", "4334101", "4334201", "3109111", "31099", "31092"}
@@ -151,10 +143,10 @@ def combine_zip_activity_filter(adresfile, ondernemingsset):
     with open(ondernemingsset) as o:
         ondernemingen = ast.literal_eval(o.read())
 
-    denomdict = get_denomination_dictionary("kbo data 06 2024/denomination.csv")
+    denomdict = get_denomination_dictionary("data/denomination.csv")
 
     with open(adresfile, encoding="ISO-8859-1") as a, \
-            open("doublefilter_address.csv", "w", encoding="utf8") as output:
+            open("result_parsing.csv", "w", encoding="utf8") as output:
 
         line = a.readline()
         output.write('"Naam", ')
@@ -192,13 +184,13 @@ def main():
     # not needed again unless the activities change
 
     print("filter in the list of activities")
-    filter_activities("kbo data 06 2024/activity.csv")
+    filter_activities("data/activity.csv")
 
     print("filter adressen")
-    filter_zipcodes("kbo data 06 2024/address.csv")
+    filter_zipcodes("data/address.csv")
 
     print("filter ondernemingenlijst op vennootschapsvorm en juridische situatie")
-    filter_juridicalForm_and_juridicalSituation("kbo data 06 2024/enterprise.csv", "ondernemingen.txt")
+    filter_juridicalForm_and_juridicalSituation("data/enterprise.csv", "ondernemingen.txt")
 
     print("combineer adresfilter met ondernemingelijst en voeg naam toe")
     combine_zip_activity_filter("filter_address.csv", "ondernemingen.txt")
@@ -206,4 +198,6 @@ def main():
 
 
 if __name__ == "__main__":
+    start_time = time.time()
     main()
+    print("--- %s seconds ---" % (time.time() - start_time))
